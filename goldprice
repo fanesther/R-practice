@@ -1,0 +1,62 @@
+rm(list=ls(all=T))
+library(DescTools)
+library(car)
+goldprice<-read.csv("GoldUP.csv",header=TRUE)
+
+attach(goldprice)
+sum(is.na(Gold_Price))
+sum(is.na(Crude_Oil))
+sum(is.na(Interest_Rate))
+sum(is.na(USD_INR))
+sum(is.na(Sensex))
+sum(is.na(CPI))
+sum(is.na(USD_Index))
+
+
+#Response Variable = Gold Forecasting
+#Explanatory Variables = Crude_oil,Interest_Rate, USD_INR, Sensex, CPI,USD_Index
+m1<-lm(Gold_Price ~ Crude_Oil + Interest_Rate + USD_INR + Sensex + CPI + USD_Index)
+summary(m1)
+#Gold_Price =-2544.5153+1.2766Crude_Oil --723.4045Interest_Rate - 289.1551USD_INR -0.6859Sensex + 696.7094CPI -8.1177USD_Index)
+par(mfrow=c(2,2))
+plot(m1)
+summary(Crude_Oil)
+summary(Interest_Rate)
+summary(USD_INR)
+summary(Sensex)
+summary(CPI)
+summary(USD_Index)
+summary(Gold_Price)
+
+mmp(m1,m1$fitted.values,xlab="Fitted values")
+vif(m1)
+ xvar <- cbind(Crude_Oil,Interest_Rate,USD_INR,Sensex,CPI,USD_Index)
+round(cor(xvar),2)
+anova(m1)
+shapiro.test(m1$residuals)
+
+logGold_price <- log(Gold_Price)
+logcrude_oil <- log(Crude_Oil)
+logInterest_Rate <- log(Interest_Rate)
+logUSD_INR <- log(USD_INR)
+logSensex <- log(Sensex)
+ogCPI <- log(CPI)
+ogUSD_Index <- log(USD_Index)
+> 
+m2<-lm(logGold_price ~ logcrude_oil + logInterest_Rate + logUSD_INR + logSensex + logCPI + logUSD_Index) 
+summary(m2)
+par(mfrow=c(2,2))
+plot(m2)
+anova(m2)
+shapiro.test(m2$residuals)
+
+
+#logGold_price =7.011560+ 0.140983logcrude_oil + 0.004558logInterest_Rate -0.619916logUSD_INR -0.201204logSensex + 2.218234logCPI -0.775294logUSD_Index) 
+
+backAIC<-step(m1,direction = "backward")
+#Gold_Price = -2857.2544+1.3111Crude_Oil -737.8655Interest_Rate -302.7625 USD_INR -0.6894Sensex +701.5756 CPI)
+m3<-lm(Gold_Price ~ Crude_Oil + Interest_Rate + USD_INR + Sensex + CPI)
+summary(m3)
+par(mfrow=c(2,2))
+plot(m3)
+mmps(m3)
